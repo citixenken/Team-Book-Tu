@@ -1,55 +1,12 @@
 extends layout
 
 block content
-    h1= title
-    p An Oasis of Learning and Literacy
-
-    // Wrapper
-    #wrapper
-
-        // BOOK INFO
-        #bookInfo
-                    h2 Book Info
-                    p
-                        strong Title:
-                        |  <span id='bookInfoName'></span>
-                        br
-                        // strong Age:
-                        //|  <span id='userInfoAge'></span>
-                        //br
-                        //strong Gender:
-                        //|  <span id='userInfoGender'></span>
-                        //br
-                        strong Location:
-                        |  <span id='bookUserLocation'></span>
-        // /BOOK INFO
-
-        // BOOK LIST
-        h2 Book List
-        #bookList
-            table
-                thead
-                    th Book Name
-                    th Email
-                    th Delete?
-                    th Update
-                tbody
-        // /BOOK LIST
-
-        // ADD BOOK
-        h2 Add Book
-        #addBook
-                    fieldset
-                        input#inputBookName(type='text', placeholder='Name of Book')
-                        input#inputBookOwnerEmail(type='text', placeholder='Book Owner Email')
-                        br
-                        input#inputBookOwnerFullname(type='text', placeholder='Full Name')
-                        input#inputBookOwnerAge(type='text', placeholder='Age')
-                        br
-                        input#inputBookOwnerLocation(type='text', placeholder='Location')
-                        input#inputBookOwnerGender(type='text', placeholder='Gender')
-                        br
-                        button#btnAddBook Add Book
-        // /ADD BOOK
-
-    // /WRAPPER
+    if(!user)
+        a(href='/login') Login
+        br
+        a(href='/register') Register
+    if(user)
+        p You are currently logged in as #{user.username}
+        a(href='/home') Go to Home Page
+        br
+        a(href='/logout') Logout
