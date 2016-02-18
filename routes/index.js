@@ -32,11 +32,17 @@ router.post('/register', function(req, res){
 });
 
 router.get('/login', function(req, res){
-	res.render('login', { user : req.user });
+	//res.render('login', { user : req.user });
+	res.render('login', { user : req.user, message : req.flash('error') });
 });
 
-router.post('/login', passport.authenticate('local'), function(req, res){
-	res.redirect('/');
+router.post('/login', passport.authenticate('local', { failureRedirect : '/login', failureFlash : true }), function(req, res,next){
+	req.session.save(function(err){
+		if (err){
+			return next(err);
+		}
+		res.redirect('/');
+	});
 	//res.render('index', { title: 'Team-Book-Tu' }); /*Team-Book-Tu */
 });
 

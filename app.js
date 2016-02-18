@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var flash = require('connect-flash');
 
 var mongo = require('mongodb');
 var monk = require('monk');
@@ -33,6 +34,7 @@ app.use(require('express-session')({
   saveUninitialized: false
 }));
 app.use(passport.initialize());
+app.use(flash());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
