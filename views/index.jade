@@ -1,12 +1,15 @@
 extends layout
 
 block content
-    if(!user)
-        a(href='/login') Login
-        br
-        a(href='/register') Register
-    if(user)
-        p You are currently logged in as #{user.username}
-        a(href='/home') Go to Home Page
-        br
-        a(href='/logout') Logout
+	h1= title
+	p An Oasis of Learning and Literacy
+	br
+	if(!user)
+		a(href='/login') Login
+		br
+		a(href='/register') Register
+	if(user)
+		p You are currently logged in as #{user.username}
+		a(href='/home') Go to Home Page
+		br
+		a(href='/logout') Logout

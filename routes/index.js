@@ -6,7 +6,7 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //res.render('index', { title: 'Team-Book-Tu' }); /*Team-Book-Tu */
-  res.render('index', { user : req.user });
+  res.render('index', { user : req.user, title: 'Team-Book-Tu' });
   
 });
 
@@ -17,13 +17,13 @@ router.get('/home', function(req, res, next) {
 });
 
 router.get('/register' , function(req, res){
-	res.render('register', {});
+	res.render('register', { title: 'Team-Book-Tu' });
 });
 
 router.post('/register', function(req, res){
 	Account.register(new Account({ username : req.body.username}), req.body.password, function(err, account){
 		if (err){
-			return res.render('register', { info : "Sorry. That username already exists. Try again." });
+			return res.render('register', { info : "Sorry. That username already exists. Try again.", title: 'Team-Book-Tu'});
 		}
 		passport.authenticate('local')(req, res, function(){
 			res.redirect('/');
@@ -33,7 +33,7 @@ router.post('/register', function(req, res){
 
 router.get('/login', function(req, res){
 	//res.render('login', { user : req.user });
-	res.render('login', { user : req.user, message : req.flash('error') });
+	res.render('login', { user : req.user, message : req.flash('error'), title: 'Team-Book-Tu' });
 });
 
 router.post('/login', passport.authenticate('local', { failureRedirect : '/login', failureFlash : true }), function(req, res,next){
