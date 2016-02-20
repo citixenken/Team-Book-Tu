@@ -7,7 +7,7 @@ var bodyParser = require('body-parser'); //used to examine POST calls
 var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var flash = require('connect-flash');
+var flash = require('express-flash');
 var session = require('express-session');
 var nodemailer = require('nodemailer');
 var bcrypt = require('bcrypt-nodejs');
@@ -20,6 +20,10 @@ var db = monk('localhost:27017/nodetest-rest');
 var routes = require('./routes/index');
 var books = require('./routes/books');
 
+//connect to MongoDB
+mongoose.connect('mongodb://localhost/password-reset-nodejs');
+
+//mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
 var app = express(); 
 
 // view engine setup
@@ -37,8 +41,8 @@ app.use(session({
   resave : false,
   saveUninitialized: false
 }));
-app.use(passport.initialize());
 app.use(flash());
+app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -51,14 +55,45 @@ app.use(function(req, res, next){
 app.use('/', routes);
 app.use('/books', books);
 
-//passport config
+/*//passport config
+var User = require('./models/user');
 var Account = require('./models/account');
 passport.use(new LocalStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
+passport.deserializeUser(Account.deserializeUser());*/
 
-//mongoose
-mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
+//Setting up LocalStrategy
+passport.use(new LocalStrategy(function(username, password, done){
+  User.findOne({ username: username }, function(err, user){
+    if(err){
+      return done(err);
+    }
+    if(!user){
+      return done(null, false, { message: 'Incorrect username.'});
+    }
+    user.comparePassword(password, function(err, isMatch){
+      if(isMatch){
+        return done(null, user);
+      }
+      else{
+        return done(null, false, { message: 'Incorrect password.'});
+      }
+    });
+
+  });
+}));
+
+/*serialize and deserialize methods: Allows user to stay logged-in
+when navigating between different pages within application.*/
+passport.serializeUser(function(user, done){
+  done(null, user.id);
+}); 
+passport.deserializeUser(function(id, done){
+  User.findById(id, function(err, user){
+    done(err, user);
+  });
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
