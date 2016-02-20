@@ -25,7 +25,7 @@ router.get('/home', function(req, res, next) {
 
 //Register page
 router.get('/register', function(req, res){
-  res.render('signup', {
+  res.render('register', {
     user: req.user,
     title: 'Team-Book-Tu'
   });
@@ -192,7 +192,7 @@ router.post('/reset/:token', function(req, res){
         service: 'Gmail',
         auth: {
           user: 'c1t1z3nk3n',
-          pass: '#Django2015$'
+          pass: ''
         }
       });
       var mailOptions = {
