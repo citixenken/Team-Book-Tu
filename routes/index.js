@@ -15,7 +15,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/home', function(req, res, next) {
-  res.render('home', { title: 'Team-Book-Tu' }); /*Team-Book-Tu */
+  res.render('home', { 
+    user : req.user,
+    title: 'Team-Book-Tu' }); /*Team-Book-Tu */
   //res.render('home', { user : req.user });
   
 });
@@ -90,6 +92,8 @@ router.post('/login', function(req, res, next){
       return res.redirect('/');
     });
   })(req, res, next); //passport goddamnit!
+
+
 });
 
 //Password reset
@@ -216,7 +220,9 @@ router.post('/reset/:token', function(req, res){
 
 router.get('/logout', function(req, res){
 	req.logout();
+  req.session.destroy();//clear session data
 	res.redirect('/');
+  
 });
 
 

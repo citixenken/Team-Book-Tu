@@ -42,7 +42,10 @@ app.use(cookieParser());
 app.use(session({
   secret : 'session secret key',
   resave : false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  httpOnly: true,
+  secure: true,
+  ephemeral: true
 }));
 app.use(flash());
 app.use(passport.initialize());
