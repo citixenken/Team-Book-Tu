@@ -23,6 +23,9 @@ var books = require('./routes/books');
 //connect to MongoDB
 mongoose.connect('mongodb://localhost/password-reset-nodejs');
 
+var User = require('./models/user');
+var Account = require('./models/account');
+
 //mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
 var app = express(); 
 
@@ -56,8 +59,7 @@ app.use('/', routes);
 app.use('/books', books);
 
 /*//passport config
-var User = require('./models/user');
-var Account = require('./models/account');
+
 passport.use(new LocalStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());*/
