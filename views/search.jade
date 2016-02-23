@@ -1,3 +1,29 @@
 extends layout
 
 block content
+    .container
+    h1= title
+    p An Oasis of Learning and Literacy
+    br
+    if(user)
+
+        p.lead Search Book in our Database
+        form(role='form',method="POST", style='max-width: 300px;')
+            .form-group
+                label(for= 'booktitle') By Book Title
+                input.form-control(type='text', name="booktitle", placeholder='Enter Book Title', autofocus)
+            .form-group
+                label(for= 'authorname') By Name of Author
+                input.form-control(type='text', name="authorname", placeholder='Enter Name of Author', autofocus)
+            .form-group
+                label(for= 'isbn') By ISBN
+                input.form-control(type='text', name="isbn", placeholder='Enter ISBN', autofocus)
+            button.btn.btn-primary(type='submit') Search Book
+      
+    if(!user)
+        br
+        p.lead You are not authorized to view this page. 
+        br
+        a(href='/login') Login
+        br
+        a(href='/register') Register
