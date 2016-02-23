@@ -1,8 +1,11 @@
 var express = require('express');
 var passport = require('passport');
+var async = require('async');
+var crypto = require('crypto');
 var Account = require('../models/account');
 var User = require('../models/user');
 var router = express.Router();
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -14,10 +17,12 @@ router.get('/', function(req, res, next) {
   
 });
 
-router.get('/home', function(req, res, next) {
-  res.render('home', { 
+//Homepage for registered user
+router.get('/homepage', function(req, res, next) {
+  res.render('homepage', { 
     user : req.user,
-    title: 'Team-Book-Tu' }); /*Team-Book-Tu */
+    title: 'Team-Book-Tu'
+    }); /*Team-Book-Tu */
   //res.render('home', { user : req.user });
   
 });
@@ -25,6 +30,14 @@ router.get('/home', function(req, res, next) {
 /*router.get('/register' , function(req, res){
 	res.render('register', { title: 'Team-Book-Tu' });
 });*/
+
+//Search Page
+router.get('/search', function(req, res, next){
+  res.render('search', {
+    user: req.user,
+    title: 'Team-Book-Tu'
+  });
+});
 
 //Register page
 router.get('/register', function(req, res){
@@ -219,8 +232,8 @@ router.post('/reset/:token', function(req, res){
 });
 
 router.get('/logout', function(req, res){
-	req.logout();
-  req.session.destroy();//clear session data
+	req.session.destroy();//clear session data
+  req.logout();
 	res.redirect('/');
   
 });

@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser'); //used to examine POST calls
+
 var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -14,17 +15,17 @@ var bcrypt = require('bcrypt-nodejs');
 var async = require('async');
 var crypto = require('crypto');
 var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/nodetest-rest');
+//var monk = require('monk');
+//var db = monk('localhost:27017/password-reset-nodejs');
 
 var routes = require('./routes/index');
-var books = require('./routes/books');
+//var books = require('./routes/books');
 
 //connect to MongoDB
 mongoose.connect('mongodb://localhost/password-reset-nodejs');
 
 var User = require('./models/user');
-var Account = require('./models/account');
+//var Account = require('./models/account');
 
 //mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
 var app = express(); 
@@ -37,7 +38,7 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
   secret : 'session secret key',
@@ -53,13 +54,13 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //make our db accessible to our router.
-app.use(function(req, res, next){
-  req.db = db;
-  next();
-});
+// app.use(function(req, res, next){
+//   req.db = db;
+//   next();
+// });
 
 app.use('/', routes);
-app.use('/books', books);
+//app.use('/books', books);
 
 /*//passport config
 
