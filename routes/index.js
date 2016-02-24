@@ -40,6 +40,10 @@ router.get('/search', function(req, res, next){
   });
 });
 
+router.post('/search', function(req, res){
+  
+});
+
 //Register page
 router.get('/register', function(req, res){
   res.render('register', {
