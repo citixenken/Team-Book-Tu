@@ -6,3 +6,6 @@ var bookSchema = new Schema({
 	authorname: { type: String, required: true, unique: true},
 	isbn: { type: String, required: true }
 });
+
+var Book = mongoose.model('Book', bookSchema);
+module.exports = Book;

@@ -6,11 +6,7 @@
 
  /* GET booklist. */
  router.get('/booklist', function(req, res, next) {
-     // var db = req.db;
-     // var collection = db.get('booklist');
-     // collection.find({},{},function(e, docs){
-     //     res.json(docs);
-     // });
+     
  });
 
 /* POST to addbook */
