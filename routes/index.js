@@ -3,8 +3,10 @@ var passport = require('passport');
 var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
-var Account = require('../models/account');
+var expressValidator = require('express-validator');
+//var Account = require('../models/account');
 var User = require('../models/user');
+var Book = require('../models/book');
 var router = express.Router();
 
 
@@ -18,19 +20,101 @@ router.get('/', function(req, res, next) {
   
 });
 
-//Homepage for registered user
-router.get('/homepage', function(req, res, next) {
-  res.render('homepage', { 
-    user : req.user,
-    title: 'Team-Book-Tu'
-    }); /*Team-Book-Tu */
-  //res.render('home', { user : req.user });
-  
+//Homepage for registered user + Book Page
+router.get('/homepage', function(req, res, next){
+  Book.find({userId: req.user.id}, function(err, docs){
+    res.render('homepage', { 
+      user: req.user,
+      title: 'Team-Book-Tu',
+      books: docs });
+  });
+     
+ });
+
+router.post('/homepage', function(req, res, next) {
+  req.assert('booktitle', 'Title cannot be blank').notEmpty();
+  req.assert('authorname', 'Name cannot be blank').notEmpty();
+  req.assert('isbn', 'ISBN cannot be blank').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/homepage');
+  }
+
+  var book = new Book({
+    userId: req.user.id,
+    booktitle: req.body.booktitle,
+    authorname: req.body.authorname,
+    isbn: req.body.isbn
+  });
+
+  book.save(function(err) {
+    if (err) {
+
+      //req.flash('errors', { msg: (err.errors.booktitle || err.errors.authorname || err.errors.isbn || err).message });
+      //req.flash('errors', { msg: 'A Book with this credentials already exists'});
+      req.flash('errors', { msg: err.message } );
+      console.log((err.message ));
+    } 
+    else {
+      req.flash('success', { msg: 'Book has been added to our database.'});
+    }
+    res.redirect('/homepage');
+  });
+    
+
 });
 
-/*router.get('/register' , function(req, res){
-	res.render('register', { title: 'Team-Book-Tu' });
-});*/
+/*
+//Book Page
+router.get('/books', function(req, res, next){
+  Book.find({userId: req.user.id}, function(err, docs){
+    res.render('books', { 
+      user: req.user,
+      title: 'Team-Book-Tu',
+      books: docs });
+  });
+     
+ });
+
+router.post('/books', function(req, res, next) {
+  req.assert('booktitle', 'Title cannot be blank').notEmpty();
+  req.assert('authorname', 'Name cannot be blank').notEmpty();
+  req.assert('isbn', 'ISBN cannot be blank').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/homepage');
+  }
+
+  var book = new Book({
+    userId: req.user.id,
+    booktitle: req.body.booktitle,
+    authorname: req.body.authorname,
+    isbn: req.body.isbn
+  });
+
+  book.save(function(err) {
+    if (err) {
+
+      //req.flash('errors', { msg: (err.errors.booktitle || err.errors.authorname || err.errors.isbn || err).message });
+      //req.flash('errors', { msg: 'A Book with this credentials already exists'});
+      req.flash('errors', { msg: err.message } );
+      console.log((err.message ));
+    } 
+    else {
+      req.flash('success', { msg: 'Book has been added to our database.'});
+    }
+    res.redirect('/books');
+  });
+    
+
+});
+*/
 
 //Search Page
 router.get('/search', function(req, res, next){

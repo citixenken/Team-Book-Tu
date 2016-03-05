@@ -7,6 +7,7 @@ var bodyParser = require('body-parser'); //used to examine POST calls
 
 var mongoose = require('mongoose');
 var passport = require('passport');
+var expressValidator = require('express-validator');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('express-flash');
 var session = require('express-session');
@@ -22,9 +23,10 @@ var routes = require('./routes/index');
 //var books = require('./routes/books');
 
 //connect to MongoDB
-mongoose.connect('mongodb://localhost/password-reset-nodejs');
+mongoose.connect('mongodb://localhost/app-database');
 
 var User = require('./models/user');
+var Book = require('./models/book');
 //var Account = require('./models/account');
 
 //mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
@@ -39,6 +41,7 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressValidator());
 app.use(cookieParser());
 app.use(session({
   secret : 'session secret key',

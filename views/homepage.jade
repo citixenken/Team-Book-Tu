@@ -1,12 +1,19 @@
 extends layout
 
 block content
-  .container
+    .container
     h1= title
     p An Oasis of Learning and Literacy
     br
     if(user)
-
+        
+        h3 My Books Collection
+        if books
+            ul.text-capitalize
+                for book in books
+                    li= book.booktitle
+                        ul= book.authorname
+        .page-header
         p.lead Add a Book to your collection
         form(role='form',method="POST", style='max-width: 300px;')
             .form-group
