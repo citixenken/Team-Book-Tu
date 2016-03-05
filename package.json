@@ -22,6 +22,7 @@
     "express": "~4.13.1",
     "express-flash": "0.0.2",
     "express-session": "^1.13.0",
+    "express-validator": "^2.19.1",
     "jade": "~1.11.0",
     "mocha": "~1.14.0",
     "mongodb": "~2.0.33",
