@@ -4,13 +4,13 @@ var async = require('async');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var expressValidator = require('express-validator');
-//var Account = require('../models/account');
 var User = require('../models/user');
 var Book = require('../models/book');
 var router = express.Router();
 
 
 /* GET home page. */
+
 router.get('/', function(req, res, next) {
   //res.render('index', { title: 'Team-Book-Tu' }); /*Team-Book-Tu */
   res.render('index', { 
@@ -20,7 +20,9 @@ router.get('/', function(req, res, next) {
   
 });
 
-//Homepage for registered user + Book Page
+
+/*Homepage for registered user + Book Page*/
+
 router.get('/homepage', function(req, res, next){
   Book.find({userId: req.user.id}, function(err, docs){
     res.render('homepage', { 
@@ -52,9 +54,6 @@ router.post('/homepage', function(req, res, next) {
 
   book.save(function(err) {
     if (err) {
-
-      //req.flash('errors', { msg: (err.errors.booktitle || err.errors.authorname || err.errors.isbn || err).message });
-      //req.flash('errors', { msg: 'A Book with this credentials already exists'});
       req.flash('errors', { msg: err.message } );
       console.log((err.message ));
     } 
@@ -67,56 +66,9 @@ router.post('/homepage', function(req, res, next) {
 
 });
 
-/*
-//Book Page
-router.get('/books', function(req, res, next){
-  Book.find({userId: req.user.id}, function(err, docs){
-    res.render('books', { 
-      user: req.user,
-      title: 'Team-Book-Tu',
-      books: docs });
-  });
-     
- });
 
-router.post('/books', function(req, res, next) {
-  req.assert('booktitle', 'Title cannot be blank').notEmpty();
-  req.assert('authorname', 'Name cannot be blank').notEmpty();
-  req.assert('isbn', 'ISBN cannot be blank').notEmpty();
+/*Search Page*/
 
-  var errors = req.validationErrors();
-
-  if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/homepage');
-  }
-
-  var book = new Book({
-    userId: req.user.id,
-    booktitle: req.body.booktitle,
-    authorname: req.body.authorname,
-    isbn: req.body.isbn
-  });
-
-  book.save(function(err) {
-    if (err) {
-
-      //req.flash('errors', { msg: (err.errors.booktitle || err.errors.authorname || err.errors.isbn || err).message });
-      //req.flash('errors', { msg: 'A Book with this credentials already exists'});
-      req.flash('errors', { msg: err.message } );
-      console.log((err.message ));
-    } 
-    else {
-      req.flash('success', { msg: 'Book has been added to our database.'});
-    }
-    res.redirect('/books');
-  });
-    
-
-});
-*/
-
-//Search Page
 router.get('/search', function(req, res, next){
   res.render('search', {
     user: req.user,
@@ -128,7 +80,9 @@ router.post('/search', function(req, res){
   
 });
 
-//Register page
+
+/*Register page*/
+
 router.get('/register', function(req, res){
   res.render('register', {
     user: req.user,
@@ -136,69 +90,92 @@ router.get('/register', function(req, res){
   });
 });
 
-/*router.post('/register', function(req, res){
-	Account.register(new Account({ username : req.body.username}), req.body.password, function(err, account){
-		if (err){
-			return res.render('register', { info : "Sorry. That username already exists. Try again.", title: 'Team-Book-Tu'});
-		}
-		passport.authenticate('local')(req, res, function(){
-			res.redirect('/');
-		});
-	});
-});*/
 
 router.post('/register', function(req, res){
+  req.assert('username', 'Username cannot be blank').notEmpty();
+  req.assert('email', 'Email is not valid').isEmail();
+  req.assert('password', 'Password must be at least 4 characters long').len(4);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/register');
+  }
   var user = new User({
     username: req.body.username,
     email: req.body.email,
     password: req.body.password
   });
-  user.save(function(err){
-    req.logIn(user, function(err){
-      res.redirect('/');
+
+  User.findOne({ email: req.body.email }, function(err, existingUser) {
+    if (existingUser) {
+      req.flash('errors', { msg: 'Account with that email address already exists.' });
+      return res.redirect('/register');
+    }
+    user.save(function(err) {
+      if (err) {
+        return next(err);
+      }
+      req.logIn(user, function(err) {
+        if (err) {
+          return next(err);
+        }
+        req.flash('success', { msg: 'Registration successful! You have been added to our database.' });
+        res.redirect('/');
+      });
     });
   });
 });
 
-router.get('/login', function(req, res){
-	//res.render('login', { user : req.user });
-	res.render('login', { 
-		user : req.user, 
-		message : req.flash('error'), 
-		title: 'Team-Book-Tu' 
-	});
-});
 
-/*router.post('/login', passport.authenticate('local', { failureRedirect : '/login', failureFlash : true }), function(req, res,next){
-	req.session.save(function(err){
-		if (err){
-			return next(err);
-		}
-		res.redirect('/');
-	});
-	//res.render('index', { title: 'Team-Book-Tu' }); Team-Book-Tu 
-});*/
+/*Login page*/
+
+router.get('/login', function(req, res){
+	if (req.user) {
+    return res.redirect('/');
+  }
+  res.render('login', {
+    title: 'Team-Book-Tu'
+  });
+});
 
 router.post('/login', function(req, res, next){
-  passport.authenticate('local', function(err, user, info){
-    if(err){
+
+  req.assert('username', 'Username is not valid').notEmpty();
+  req.assert('password', 'Password cannot be blank').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/login');
+  }
+
+  passport.authenticate('local', function(err, user, info) {
+    if (err) {
       return next(err);
     }
-    if(!user){
+    if (!user) {
+      req.flash('errors', { msg: info.message });
       return res.redirect('/login');
     }
-    req.logIn(user, function(err){
-      if(err){
+    req.logIn(user, function(err) {
+      if (err) {
         return next(err);
       }
-      return res.redirect('/');
+      req.flash('success', { msg: 'Success! You are logged in.' });
+      res.redirect(req.session.returnTo || '/');
     });
-  })(req, res, next); //passport goddamnit!
+  })(req, res, next);//passport goddamnit!
 
 
 });
 
-//Password reset
+
+/*Forgot password: Password reset*/
+
 router.get('/forgot', function(req, res){
   res.render('forgot', {
     user: req.user
@@ -260,7 +237,9 @@ router.post('/forgot', function(req, res, next){
     });
 });
 
-//Reset password: Tokens
+
+/*Reset password: Tokens*/
+
 router.get('/reset/:token', function(req, res){
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() }}, function(err, user){
     if(!user){
@@ -319,6 +298,9 @@ router.post('/reset/:token', function(req, res){
       res.redirect('/');
     });
 });
+
+
+/*Logout*/
 
 router.get('/logout', function(req, res){
 	req.session.destroy();//clear session data

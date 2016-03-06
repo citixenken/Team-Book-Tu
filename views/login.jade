@@ -8,13 +8,11 @@ block content
     p.lead Login to continue
     form(role='form', action="/login",method="POST", style='max-width: 300px;')
       .form-group
-          label(for= 'username') Username
-          input.form-control(type='text', name="username", placeholder='Enter Username', autofocus)
+        label(for='username') Username
+        input.form-control(type='text', name="username", placeholder='Username')
       .form-group
-          label(for= 'password') Password
-          input.form-control(type='password', name="password", placeholder='Password')
+        label(for='password') Password
+        input.form-control(type='password', name="password", placeholder='Password') 
       button.btn.btn-primary(type='submit') Login
       a.btn.btn-link(href='/forgot') Forgot Password?
-    br 
-    if (message.length > 0)
-      p= message
+    
