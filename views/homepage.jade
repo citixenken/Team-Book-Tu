@@ -16,6 +16,7 @@ block content
         .page-header
         p.lead Add a Book to your collection
         form(role='form',method="POST", style='max-width: 300px;')
+            input(type='hidden', name='_csrf', value=_csrf)
             .form-group
                 label(for= 'booktitle') Book Title
                 input.form-control(type='text', name="booktitle", placeholder='Enter Book Title', autofocus)
